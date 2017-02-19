@@ -1,0 +1,258 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <title>S301</title>
+    <style>
+    	* { 
+			padding: 0; 
+			margin: 0; 
+			background-color: #e6e6e6;
+		}
+    	canvas { 
+			display: block; 
+			margin: 0 auto; 
+		}
+    </style>
+</head>
+<body>
+
+<canvas id="canvas" width="600" height="600"></canvas>
+
+<script>
+
+/*
+ * @author: Tim Ascencio
+ * Project S301 : side-step arrow dodging video game
+ * v01
+ */
+
+// Draw canvas : object ctx
+var canvas = document.getElementById("canvas");
+var ctx = canvas.getContext("2d");
+
+// BOX ACTORS : Position and tracking variables
+var actorTopX = 285;
+var actorBottomX = 285;
+var actorY = 430;
+var actorWidth = 30;
+var actorHeight = 20;
+
+// ARROW (stick) : Position and tracking variables
+var arrowX = 50;
+var arrowY = 50;
+var arrowWidth = 2;
+var arrowHeight = 50;
+var initialArrowY = arrowY;
+
+// ARROW HEAD : Position and tracking variables
+var arrowHeadX = (arrowX+(arrowWidth/2));
+var arrowHeadY = (arrowY*2)+10;
+var arrowHeadBaseX = (arrowX-10);
+var arrowHeadBaseY = (arrowY*2);
+var initialArrowHeadY = arrowHeadY;
+var initialArrowHeadBaseY = (arrowY*2);
+
+// arrow key pressed
+var rightPressed = false;
+var leftPressed = false;
+var keyAPressed = false;
+var keyDPressed = false;
+
+// LOGIC : game mechanics and logic variables
+var gameOver = false;
+var actorSpeed = 1;
+var rng;
+
+// primary color is background , secondary color is another contrasting color
+var primaryColor = "#fff";
+var secondaryColor = "#000";
+
+// check if keyboard keys are pressed down or lifted up
+document.addEventListener("keydown", keyDownHandler, false);
+document.addEventListener("keyup", keyUpHandler, false);
+
+// key codes : 37=left , 39=right , 65=A , 68=D
+function keyDownHandler(event){
+    if(event.keyCode == 39) {
+        rightPressed = true;
+    } else if(event.keyCode == 37){
+        leftPressed = true;
+    } else if(event.keyCode == 65) {
+        keyAPressed = true;
+    } else if(event.keyCode == 68){
+        keyDPressed = true;
+    }
+}
+
+// key codes : 37=left , 39=right , 65=A , 68=D
+function keyUpHandler(event){
+    if(event.keyCode == 39){
+        rightPressed = false;
+    } else if(event.keyCode == 37){
+        leftPressed = false;
+    } else if(event.keyCode == 65) {
+        keyAPressed = false;
+    } else if(event.keyCode == 68){
+        keyDPressed = false;
+    }
+}
+
+function drawBackground(primaryFill, secondaryFill){
+
+	// Draw primary background
+	ctx.beginPath();
+	ctx.rect(0, 0, canvas.width, canvas.height);
+	ctx.fillStyle = primaryFill;
+	ctx.fill();
+	ctx.closePath();
+
+	// Draw secondary background
+	ctx.beginPath();
+	ctx.rect(0, ((canvas.height*3)/4), canvas.width, (canvas.height/4));
+	ctx.fillStyle = secondaryFill;
+	ctx.fill();
+	ctx.closePath();
+}
+
+function drawActor(primaryFill, secondaryFill){
+
+	// Draw mainActor (top box)
+	ctx.beginPath();
+	ctx.rect(actorTopX, actorY, actorWidth, actorHeight);
+	ctx.fillStyle = secondaryFill;
+	ctx.fill();
+	ctx.closePath();
+	
+	// Draw mainActor (bottom box)
+	ctx.beginPath();
+	ctx.rect(actorBottomX, actorY+actorHeight, actorWidth, actorHeight);
+	ctx.fillStyle = primaryFill;
+	ctx.fill();
+	ctx.closePath();
+	
+	// move top actor left/right on key press
+	// left/right arrow keys
+	if(rightPressed && actorTopX < canvas.width-actorWidth){
+		actorTopX += actorSpeed;
+	} else if(leftPressed && actorTopX > 0){
+		actorTopX -= actorSpeed;
+	}
+	
+	// move bottom actor left/right on key press
+	// A key(travel left) D key(travel right)
+	if(keyDPressed && actorBottomX < canvas.width-actorWidth){
+		actorBottomX += actorSpeed;
+	} else if(keyAPressed && actorBottomX > 0){
+		actorBottomX -= actorSpeed;
+	}
+}
+
+// Random Number Generator within bounds of canvas for arrow spawn locations
+function arrowSpawnRNG(){
+	var max = ctx.canvas.width;
+	var min = 0;
+	rng = Math.random() * (max-min) + min;
+	return rng;
+}
+
+// Draw the rectangle that is the base of the arrow
+// secondary outline - primary fill - thinckness of 5
+function drawArrowStick(x, y, width, height, fill, stroke){
+	ctx.beginPath();
+	ctx.lineWidth = 5;
+	ctx.rect(x, y, width, height);
+	ctx.strokeStyle = stroke;
+	ctx.stroke();
+	ctx.fillStyle = fill;
+	ctx.fill();
+	ctx.closePath();
+}
+
+// Draw arrow head using triangle points. Specified points with variables
+// secondary outline - primary fill - thinckness of 5
+function drawArrowHead(x, y, baseX, baseY, fill, stroke){
+	ctx.beginPath();
+	ctx.lineWidth = 5;
+	ctx.moveTo(x, y);  // origin
+    ctx.lineTo(baseX, baseY);  // from origin to point1
+    ctx.lineTo(baseX+20, baseY);  // from point 1 to point 2
+	ctx.lineTo(x, y);  // from point 2 back to origin
+	ctx.strokeStyle = stroke;
+	ctx.stroke();
+	ctx.fillStyle = fill;
+	ctx.fill();
+	ctx.closePath();
+}
+
+// Combine arrow stick and arrow head
+// Draw full arrow traveling down (increase Y position variables)
+function drawArrow(){
+	
+	// draw both components of the arrow
+	drawArrowStick(arrowX, arrowY, arrowWidth, arrowHeight, primaryColor, secondaryColor);
+	drawArrowHead(arrowHeadX, arrowHeadY, arrowHeadBaseX, arrowHeadBaseY, primaryColor, secondaryColor);
+
+	// initial rng spawn for arrow
+	if(arrowY==initialArrowY){
+		var rng = arrowSpawnRNG();
+		arrowX = rng;
+		arrowHeadX = rng;
+		arrowHeadBaseX = rng-10;
+	}
+	
+	// arrow travels down screen until hitting end of canvas
+	// otherwise, reset arrow at top of screen in rng location
+	if(arrowY<=canvas.height){
+		arrowY += 1;
+		arrowHeadY += 1;
+		arrowHeadBaseY += 1;
+	} else{
+		var rng = arrowSpawnRNG();
+		arrowX = rng;
+		arrowHeadX = rng;
+		arrowHeadBaseX = rng-10;
+		arrowY = initialArrowY;
+		arrowHeadY = initialArrowHeadY;
+		arrowHeadBaseY = initialArrowHeadBaseY;
+	}
+}
+
+// Draw all components onto canvas
+function draw(){
+	ctx.clearRect(0,0, canvas.width, canvas.height);
+	drawBackground(primaryColor, secondaryColor);
+	drawActor(primaryColor, secondaryColor);
+	drawArrow();
+	
+	// collision detection game over top actor
+	if(actorTopX < arrowHeadX && actorTopX+actorWidth > arrowHeadX && actorY < arrowHeadY && actorY+actorHeight > arrowHeadY){
+		gameOver = true;
+	}
+	
+	// collision detection game over bottom actor
+	if(actorBottomX < arrowHeadX && actorBottomX+actorWidth > arrowHeadX && actorY+actorHeight < arrowHeadY && actorY+(actorHeight*2) > arrowHeadY){
+		gameOver = true;
+	}
+	
+	// boolean gameOver determine if document needs to reload
+	if(gameOver){
+		alert("GAME OVER");
+		document.location.reload();
+	}
+}
+
+// draw() function executed within setInterval every 5 milliseconds
+setInterval(draw, 5);
+
+</script>
+</br>
+<h2>Controls:</h2>
+<p>Top Box: Travel left and right with the 'left arrow' key and the 'right arrow' Key</p>
+<p>Bottom Box: Travel left and right with the 'A' key and the 'D' Key</p>
+</br>
+<h2>Objective:</h2>
+<p>Avoid incoming projectiles</p>
+
+</body>
+</html>
