@@ -1,0 +1,23 @@
+2/21/2017 accomplishment summary:
+Previously Working assets
+	~> actor keyboard control and environment fully drawn.
+	~> RNG arrow spawn completed.
+	~> Game Over boolean completed. (Collision detected)
+	~> arrow point contacts actor (black or white), game over is true
+	~> Debugged hidden issue. (Canvas wasn't being cleared properly)
+	
+- Updated Assets:
+- Arrow spawns above screen before falling
+- Framerate is stored for reusability (frameRate)
+- Score count incrementing by 301 (scoreCounter)
+- Timer implemented (timeLapsed & showTime)
+- User is notified about accomplishment (showTime & scoreCounter)
+
+
+TODO: 
+- Increase arrowSpeed over time. (Level progression)
+- User Interface and startup menu (start, options, about)
+	~> Start: prompt for difficulty setting (to be implemented) then begin game
+	~> Options: A color scheme controller, maybe audio
+	~> About: Write about myself building the project
+	

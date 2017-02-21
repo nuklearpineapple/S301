@@ -1,0 +1,19 @@
+2/21/2017 accomplishment summary:
+Previously Working assets
+	- Arrow spawns above screen before falling
+	- Framerate is stored for reusability (frameRate)
+	- Score count incrementing by 301 (scoreCounter)
+	- Timer implemented (timeLapsed & showTime)
+	- User is notified about accomplishment (showTime & scoreCounter)
+	
+- Updated Assets:
+- Increase arrowSpeed over time.
+- Javascript files are separated from html and repurposed in separate files
+	(preparing to clean UI and build menu)
+
+TODO: 
+- User Interface and startup menu (start, options, about)
+	~> Start: prompt for difficulty setting (to be implemented) then begin game
+	~> Options: A color scheme controller, maybe audio
+	~> About: Write about myself building the project
+	
