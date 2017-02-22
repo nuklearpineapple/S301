@@ -12,6 +12,8 @@ Previously Working assets
 	(preparing to clean UI and build menu)
 
 TODO: 
+- Fix arrows to spawn more than one at a time.
+- Fix arrows to utilize different travel speeds
 - User Interface and startup menu (start, options, about)
 	~> Start: prompt for difficulty setting (to be implemented) then begin game
 	~> Options: A color scheme controller, maybe audio
